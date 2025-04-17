@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3>Applications for {{ opportunity.title }}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <p><strong>Type:</strong> {{ opportunity.type }}</p>
+                            <p><strong>Location:</strong> {{ opportunity.location }}</p>
+                            <p><strong>Salary:</strong> {{ opportunity.salary }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Posted:</strong> {{ opportunity.posted_date.strftime('%B %d, %Y') }}</p>
+                            <p><strong>Deadline:</strong> {{ opportunity.deadline.strftime('%B %d, %Y') }}</p>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <h5>Description</h5>
+                        <p>{{ opportunity.description }}</p>
+                    </div>
+                    <div class="mb-4">
+                        <h5>Requirements</h5>
+                        <p>{{ opportunity.requirements }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Student Applications</h3>
+                </div>
+                <div class="card-body">
+                    {% if applications %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Student Name</th>
+                                        <th>Department</th>
+                                        <th>Email</th>
+                                        <th>CGPA</th>
+                                        <th>Graduation Year</th>
+                                        <th>Application Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for application in applications %}
+                                    <tr>
+                                        <td>{{ application.student_name }}</td>
+                                        <td>{{ application.department_name }}</td>
+                                        <td>{{ application.student_email }}</td>
+                                        <td>{{ application.cgpa }}</td>
+                                        <td>{{ application.graduation_year }}</td>
+                                        <td>{{ application.application_date.strftime('%B %d, %Y') }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ 'success' if application.status == 'shortlisted' else 'warning' if application.status == 'applied' else 'danger' }}">
+                                                {{ application.status.title() }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('view_student_resume', student_id=application.student_id) }}" 
+                                               class="btn btn-sm btn-info" target="_blank">View Resume</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <p>No applications received yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

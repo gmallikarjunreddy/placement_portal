@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3>Welcome, {{ company.name }}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Industry:</strong> {{ company.industry }}</p>
+                            <p><strong>Website:</strong> <a href="{{ company.website }}" target="_blank">{{ company.website }}</a></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Contact Email:</strong> {{ company.contact_email }}</p>
+                            <p><strong>Contact Number:</strong> {{ company.contact_number }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">Your Opportunities</h3>
+                    <a href="{{ url_for('add_opportunity') }}" class="btn btn-primary">Post New Opportunity</a>
+                </div>
+                <div class="card-body">
+                    {% if opportunities %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Type</th>
+                                        <th>Location</th>
+                                        <th>Deadline</th>
+                                        <th>Applications</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for opportunity in opportunities %}
+                                    <tr>
+                                        <td>{{ opportunity.title }}</td>
+                                        <td>{{ opportunity.type }}</td>
+                                        <td>{{ opportunity.location }}</td>
+                                        <td>{{ opportunity.deadline.strftime('%B %d, %Y') }}</td>
+                                        <td>{{ opportunity.application_count }}</td>
+                                        <td>
+                                            <a href="{{ url_for('view_applications', opportunity_id=opportunity.opportunity_id) }}" 
+                                               class="btn btn-sm btn-info">View Applications</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <p class="mb-3">You haven't posted any opportunities yet.</p>
+                            <a href="{{ url_for('add_opportunity') }}" class="btn btn-primary">Post Your First Opportunity</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

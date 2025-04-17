@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ opportunity.title }} - Placement Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">{{ opportunity.title }}</h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <h5>Company Information</h5>
+                    <h6 class="text-muted">{{ opportunity.company_name }}</h6>
+                    <p>{{ opportunity.company_description }}</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h5>Opportunity Details</h5>
+                    <p>{{ opportunity.description }}</p>
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <p><strong>Type:</strong> <span class="badge bg-primary">{{ opportunity.type }}</span></p>
+                            <p><strong>Location:</strong> {{ opportunity.location }}</p>
+                            <p><strong>Salary:</strong> {% if opportunity.salary %}₹{{ opportunity.salary }}{% else %}Not specified{% endif %}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Posted Date:</strong> {{ opportunity.posted_date }}</p>
+                            <p><strong>Application Deadline:</strong> {{ opportunity.deadline }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <h5>Required Skills</h5>
+                    {% if skills %}
+                    <div>
+                        {% for skill in skills %}
+                        <span class="badge {% if skill.is_required %}bg-info{% else %}bg-secondary{% endif %} me-2 mb-2">{{ skill.name }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No specific skills listed for this opportunity.</p>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-4">
+                    <h5>Requirements</h5>
+                    <p>{{ opportunity.requirements }}</p>
+                </div>
+                
+                <div class="text-center mt-4">
+                    {% if 'user_id' in session and session.user_type == 'student' %}
+                    <a href="{{ url_for('apply_for_opportunity', opportunity_id=opportunity.opportunity_id) }}" class="btn btn-success">Apply Now</a>
+                    {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-primary">Login to Apply</a>
+                    {% endif %}
+                    <a href="javascript:history.back()" class="btn btn-outline-secondary ms-2">Back</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Apply - {{ opportunity.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center">Apply for {{ opportunity.title }}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h5>Company: {{ opportunity.company_name }}</h5>
+                        <p><strong>Description:</strong> {{ opportunity.description }}</p>
+                        <p><strong>Requirements:</strong> {{ opportunity.requirements }}</p>
+                        <p><strong>Location:</strong> {{ opportunity.location }}</p>
+                        <p><strong>Type:</strong> {{ opportunity.type }}</p>
+                        <p><strong>Deadline:</strong> {{ opportunity.deadline.strftime('%B %d, %Y') }}</p>
+                    </div>
+
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="resume" class="form-label">Resume (Required)</label>
+                            <input type="file" class="form-control" id="resume" name="resume" accept=".pdf,.doc,.docx" required>
+                            <div class="form-text">Please upload your resume in PDF, DOC, or DOCX format.</div>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Submit Application</button>
+                            <a href="{{ url_for('student_dashboard') }}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

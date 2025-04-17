@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - Placement Portal{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="mb-0">Welcome, {{ session['name'] }}</h2>
+                        <div>
+                            <a href="{{ url_for('admin_manage_departments') }}" class="btn btn-primary me-2">
+                                <i class="fas fa-building"></i> Manage Departments
+                            </a>
+                            <a href="{{ url_for('admin_manage_users') }}" class="btn btn-info me-2">
+                                <i class="fas fa-users"></i> Manage Users
+                            </a>
+                            <a href="{{ url_for('admin_manage_opportunities') }}" class="btn btn-success">
+                                <i class="fas fa-briefcase"></i> Manage Opportunities
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0">Total Students</h6>
+                            <h2 class="mt-2 mb-0">{{ stats.total_students }}</h2>
+                        </div>
+                        <i class="fas fa-user-graduate fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0">Total Companies</h6>
+                            <h2 class="mt-2 mb-0">{{ stats.total_companies }}</h2>
+                        </div>
+                        <i class="fas fa-building fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0">Total Opportunities</h6>
+                            <h2 class="mt-2 mb-0">{{ stats.total_opportunities }}</h2>
+                        </div>
+                        <i class="fas fa-briefcase fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0">Total Applications</h6>
+                            <h2 class="mt-2 mb-0">{{ stats.total_applications }}</h2>
+                        </div>
+                        <i class="fas fa-file-alt fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Activities</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Activity</th>
+                                    <th>User</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for activity in recent_activities %}
+                                <tr>
+                                    <td>{{ activity.date.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if activity.activity_type == 'Application' else 'info' }}">
+                                            {{ activity.activity_type }}
+                                        </span>
+                                    </td>
+                                    <td>{{ activity.user_name }}</td>
+                                    <td>{{ activity.details }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('admin_add_department') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-plus"></i> Add New Department
+                        </a>
+                        <a href="{{ url_for('admin_manage_skills') }}" class="btn btn-outline-success">
+                            <i class="fas fa-tags"></i> Manage Skills
+                        </a>
+                        <a href="{{ url_for('admin_reports') }}" class="btn btn-outline-info">
+                            <i class="fas fa-chart-bar"></i> Generate Reports
+                        </a>
+                        <a href="{{ url_for('admin_settings') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-cog"></i> Settings
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Placement Status</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="placementChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Placement Status Chart
+    const ctx = document.getElementById('placementChart').getContext('2d');
+    const placementData = {
+        labels: [{% for status in placement_stats %}'{{ status.status }}'{% if not loop.last %}, {% endif %}{% endfor %}],
+        datasets: [{
+            data: [{% for status in placement_stats %}{{ status.count }}{% if not loop.last %}, {% endif %}{% endfor %}],
+            backgroundColor: [
+                '#28a745',
+                '#ffc107',
+                '#dc3545',
+                '#17a2b8'
+            ]
+        }]
+    };
+    
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: placementData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %} 
